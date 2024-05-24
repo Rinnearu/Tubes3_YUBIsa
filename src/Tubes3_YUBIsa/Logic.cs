@@ -91,7 +91,7 @@ namespace Tubes3_YUBIsa
         {
             using (Bitmap image = new Bitmap(imagePath))
             {
-                // Extract the center 30x30 pixels of the image
+         
 
                 int width = image.Width;
                 int height = image.Height;
