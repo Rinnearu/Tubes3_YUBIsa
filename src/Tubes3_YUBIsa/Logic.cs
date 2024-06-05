@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using System.Drawing;
-using System.Text;
 
 namespace Tubes3_YUBIsa
 {

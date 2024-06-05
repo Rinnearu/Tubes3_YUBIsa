@@ -2,9 +2,9 @@ using System.Diagnostics;
 
 namespace Tubes3_YUBIsa
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -56,16 +56,15 @@ namespace Tubes3_YUBIsa
                 // Get the selected file path
                 string selectedFilePath = openFileDialog.FileName;
 
-                PictureBox pictureBox = this.Controls.Find("pictureBox1", true)[0] as PictureBox;
-                if (pictureBox != null)
+                if (Controls.Find("pictureBox1", true)[0] is PictureBox pictureBox)
                 {
                     pictureBox.Image = Image.FromFile(selectedFilePath);
-                    Label label = this.Controls.Find("label2", true)[0] as Label;
-                    if (label != null)
+                    if (Controls.Find("label2", true)[0] is Label label)
                     {
                         label.Text = selectedFilePath;
                     }
                     pictureBox.BringToFront(); // Bring the PictureBox to the front
+                    searchButton.Enabled = true;
                 }
                 else
                 {
@@ -88,22 +87,46 @@ namespace Tubes3_YUBIsa
             }
         }
 
-        private void searchbutton_Click(object sender, EventArgs e)
+        private async void searchbutton_Click(object sender, EventArgs e)
         {
-            searchButton.Text = "loading";
-            Stopwatch stopwatch = new Stopwatch();
+            ShowLoadingPanel();
+            
+            await Task.Run(() => SearchMatching());
+           
+            CloseLoadingPanel();
+        }
+
+        private void ShowLoadingPanel()
+        {
+            LoadingPanel.BackColor = Color.White;
+            LoadingPanel.BringToFront();
+            LoadingPanel.Visible = true;
+        }
+
+        private void CloseLoadingPanel()
+        {
+            LoadingPanel.Visible = false;
+            LoadingPanel.BackColor = Color.Transparent;
+            LoadingPanel.SendToBack();
+        }
+
+        private void SearchMatching()
+        {
+            Stopwatch stopwatch = new();
             stopwatch.Start();
-            Label label = this.Controls.Find("label2", true)[0] as Label;
-            if (label != null)
+
+            if (Controls.Find("label2", true)[0] is Label label)
             {
                 string pathori = label.Text;
                 string relativePath = @"SOCOFing\Real"; // Assuming there is an 'images' directory in the same directory as the executable
-                string directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\", relativePath);
+                string directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\..\..", relativePath);
 
                 // Check if the directory exists
                 if (!Directory.Exists(directoryPath))
                 {
                     Console.WriteLine($"Directory not found: {directoryPath}");
+                    MessageBox.Show("Directory not found");
+
                     return;
                 }
                 string ascii1 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(pathori));
@@ -115,8 +138,7 @@ namespace Tubes3_YUBIsa
                                                               file.ToLower().EndsWith("bmp") ||
                                                               file.ToLower().EndsWith("gif")).ToArray();
                 bool kmp = false;
-                CheckBox check = this.Controls.Find("checkBox1", true)[0] as CheckBox;
-                if (check != null)
+                if (Controls.Find("checkBox1", true)[0] is CheckBox check)
                 {
                     if (check.Checked)
                     {
@@ -141,17 +163,20 @@ namespace Tubes3_YUBIsa
                         }
                         if (index != -1)
                         {
-                            searchButton.Text = "Ketemu";
                             stopwatch.Stop();
-                            Label waaktulabel = this.Controls.Find("waktulabel", true)[0] as Label;
-                            if (waaktulabel != null)
+                            if (Controls.Find("waktulabel", true)[0] is Label waktulabeltemp)
                             {
-                                waaktulabel.Text = ": " + stopwatch.Elapsed.ToString();
+                                waktulabeltemp.Invoke((MethodInvoker)delegate
+                                {
+                                    waktulabeltemp.Text = ": " + stopwatch.Elapsed.ToString();
+                                });
                             }
-                            Label peresentaselabel = this.Controls.Find("persentaselabel", true)[0] as Label;
-                            if (peresentaselabel != null)
+                            if (Controls.Find("persentaselabel", true)[0] is Label persentaselabeltemp)
                             {
-                                peresentaselabel.Text = ": 100%";
+                                persentaselabeltemp.Invoke((MethodInvoker)delegate
+                                {
+                                    persentaselabeltemp.Text = ": 100%";
+                                });
                             }
                             return;
                         }
@@ -165,7 +190,7 @@ namespace Tubes3_YUBIsa
                         Console.WriteLine($"Error processing image {Path.GetFileName(imagePath)}: {ex.Message}");
                     }
                 }
-                string bestMatchImagePath = null;
+                string? bestMatchImagePath = null;
                 int minDistance = int.MaxValue;
                 foreach (string imagePath in imageFiles)
                 {
@@ -178,21 +203,16 @@ namespace Tubes3_YUBIsa
                     }
                 }
                 stopwatch.Stop();
-                Label waktulabel = this.Controls.Find("waktulabel", true)[0] as Label;
-                if (waktulabel != null)
+                if (Controls.Find("waktulabel", true)[0] is Label waktulabel)
                 {
                     waktulabel.Text = ": " + stopwatch.Elapsed.ToString();
                 }
-                Label persentaselabel = this.Controls.Find("persentaselabel", true)[0] as Label;
-                float result1 = (float)1 - (minDistance/ascii1.Length);
+                float result1 = (float)1 - (minDistance / ascii1.Length);
 
-                if (persentaselabel != null)
+                if (Controls.Find("persentaselabel", true)[0] is Label persentaselabel)
                 {
                     persentaselabel.Text = ": " + $"{result1:F2}%";
                 }
-
-
-
 
             }
             else
@@ -212,6 +232,31 @@ namespace Tubes3_YUBIsa
         }
 
         private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void waktulabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox2_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
         {
 
         }
