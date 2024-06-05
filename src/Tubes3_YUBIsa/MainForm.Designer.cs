@@ -47,12 +47,14 @@
             LoadingPicture = new PictureBox();
             LoadingPanel = new Panel();
             LabelLoading = new Label();
+            pictureBox2 = new PictureBox();
             PanelBiodata.SuspendLayout();
             PanelMasukan.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             PanelKeluaran.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)LoadingPicture).BeginInit();
             LoadingPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             SuspendLayout();
             // 
             // PanelBiodata
@@ -230,6 +232,7 @@
             PanelKeluaran.BackColor = SystemColors.ActiveBorder;
             PanelKeluaran.BorderStyle = BorderStyle.FixedSingle;
             PanelKeluaran.Controls.Add(label3);
+            PanelKeluaran.Controls.Add(pictureBox2);
             PanelKeluaran.Location = new Point(486, 230);
             PanelKeluaran.Name = "PanelKeluaran";
             PanelKeluaran.Size = new Size(273, 342);
@@ -273,6 +276,16 @@
             LabelLoading.UseCompatibleTextRendering = true;
             LabelLoading.Click += label7_Click;
             // 
+            // pictureBox2
+            // 
+            pictureBox2.Location = new Point(-1, -1);
+            pictureBox2.Margin = new Padding(4, 5, 4, 5);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(274, 343);
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.TabIndex = 2;
+            pictureBox2.TabStop = false;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -304,6 +317,7 @@
             ((System.ComponentModel.ISupportInitialize)LoadingPicture).EndInit();
             LoadingPanel.ResumeLayout(false);
             LoadingPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -327,5 +341,6 @@
         private PictureBox LoadingPicture;
         private Panel LoadingPanel;
         private Label LabelLoading;
+        private PictureBox pictureBox2;
     }
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Configuration;
 
 namespace Tubes3_YUBIsa
 {
@@ -7,11 +8,20 @@ namespace Tubes3_YUBIsa
         public MainForm()
         {
             InitializeComponent();
+            InitializeDatabase();
         }
 
-        private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        private static void InitializeDatabase()
         {
-
+            string connectionString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
+            if (connectionString != null)
+            {
+                DatabaseConnector dbConnector = new DatabaseConnector(connectionString);
+                dbConnector.InitializeDatabase();
+            } else
+            {
+                MessageBox.Show("Didn't found connection string");
+            }
         }
 
         private void PanelMasukan_Paint(object sender, PaintEventArgs e)
