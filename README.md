@@ -31,7 +31,7 @@
 
 ## Kebutuhan Sebelum Menjalankan
 - Pada solution, terdapat App.config
-'''bash
+```bash
     <?xml version="1.0" encoding="utf-8" ?>
     <configuration>
         <connectionStrings>
@@ -40,27 +40,27 @@
                 providerName="MySql.Data.MySqlClient" />
         </connectionStrings>
     </configuration>
-'''
+```
 Ubah ServerName, DataBaseName, UserName, dan Password sesuai dengan basis data yang ingin diakses
 - Pada basis data yang dituju, isi juga database tersebut dengan file sql dump yang terdapat pada folder "dtbs"
 
 ## Cara Membangun dan Menjalankan Aplikasi
 1. Pergi ke direktori ~/src (Di terminal maupun tidak)
-'''bash
+```bash
     cd src
-'''
+```
 2. Jika memiliki Visual Studio, buka solution TUBES3_YUBIsa.sln dengan Visual Studio
 3. Pada terminal masukkan perintah-perintah berikut
-'''bash
+```bash
     dotnet restore
     dotnet build
-'''
+```
 4. Jika dilakukan pada Visual Studio, Anda bisa langsung menekan tombol mulai yang disediakan.
 5. Jika tidak dilakukan dengan Visual Studio, masuk ke direktori TUBES3_YUBIsa dan jalankan file berekstensi .csproj dengan
-'''bash
+```bash
     cd TUBES_YUBIsa
     dotnet run
-'''
+```
 
 ## Identitas Pembuat
 1. Ahmad Farid Mudrika - 13522008
