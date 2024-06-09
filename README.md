@@ -17,9 +17,12 @@
 
 ## Penjelasan Singkat Implementasi Algoritma
 ### Knuth–Morris–Pratt Algorithm
->
+> Algoritma Knuth-Morris-Pratt (KMP) adalah algoritma pencocokan string yang efisien, yang dikembangkan oleh Donald Knuth, Vaughan Pratt, dan James H. Morris pada tahun 1977. Algoritma ini dirancang untuk mencari keberadaan suatu pola dalam sebuah teks dengan cara yang efisien, menghindari pencocokan ulang karakter yang telah diketahui tidak sesuai.
+> KMP menggunakan tabel "failure function" atau "partial match table" yang memungkinkan algoritma untuk melompati bagian teks yang sudah dicocokkan sebagian. Proses utama dari algoritma KMP meliputi preprocessing dan matching
+
 ### Boyer-Moore Algorithm
->
+> Algoritma Boyer-Moore (BM) adalah salah satu algoritma pencocokan string yang paling efisien dan sering digunakan dalam praktik. Algoritma ini diperkenalkan oleh Robert S. Boyer dan J Strother Moore pada tahun 1977. BM bekerja dengan melakukan pencarian dari kanan ke kiri dan menggunakan dua heuristik utama yaitu Bad Character dan Good Suffix
+
 ### Regular Expression
 > Regular expression digunakan ketika akan mengambil biodata melalui nama. Pada biodata, nama bisa mengalami korupsi data sehingga tidak sesuai dengan format yang biasanya. Jadi ketika sudah mendapatkan berkas-citra tertentu, nama yang terasosiasi dengan citra tersebut akan diubah menjadi suatu pola regex tertentu yang akan digunakan dalam query SQL untuk mencarinya di database SQL
 
