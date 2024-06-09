@@ -137,6 +137,23 @@ namespace Tubes3_YUBIsa
                 return binaryImage;
             }
         }
+        public static Bitmap BinaryToBitmap(byte[,] binaryImage)
+        {
+            int height = binaryImage.GetLength(0);
+            int width = binaryImage.GetLength(1);
+            Bitmap bitmap = new Bitmap(width, height);
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    Color color = binaryImage[y, x] == 1 ? Color.White : Color.Black;
+                    bitmap.SetPixel(x, y, color);
+                }
+            }
+
+            return bitmap;
+        }
 
     }
 
@@ -163,6 +180,31 @@ namespace Tubes3_YUBIsa
             }
 
             return asciiString.ToString();
+        }
+        public static byte[,] AsciiToBinary(string asciiString, int height, int width)
+        {
+            byte[,] binaryImage = new byte[height, width];
+            int index = 0;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x += 8)
+                {
+                    if (index < asciiString.Length)
+                    {
+                        byte asciiValue = (byte)asciiString[index++];
+                        for (int bit = 0; bit < 8; bit++)
+                        {
+                            if (x + bit < width)
+                            {
+                                binaryImage[y, x + bit] = (byte)((asciiValue >> (7 - bit)) & 1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return binaryImage;
         }
     }
 

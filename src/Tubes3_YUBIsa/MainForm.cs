@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Configuration;
 using System.Windows.Forms;
+using System.Text;
 
 namespace Tubes3_YUBIsa
 {
@@ -123,32 +124,35 @@ namespace Tubes3_YUBIsa
 
         private void SearchMatching()
         {
+            DatabaseConnector db = new DatabaseConnector(ConfigurationManager.ConnectionStrings["Default"].ConnectionString);
+            List<FingerprintEntry>fingers = db.GetAllFingerprints();
             Stopwatch stopwatch = new();
             stopwatch.Start();
 
             if (Controls.Find("label2", true)[0] is Label label)
             {
                 string pathori = label.Text;
-                string relativePath = @"SOCOFing\Real";
-                string directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../", relativePath);
-                Debug.Write(directoryPath);
+                //string relativePath = @"SOCOFing\Real";
+                //string directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../", relativePath);
+                //Debug.Write(directoryPath);
 
                 // Check if the directory exists
-                if (!Directory.Exists(directoryPath))
-                {
-                    Console.WriteLine($"Directory not found: {directoryPath}");
-                    MessageBox.Show("Directory not found");
+                //if (!Directory.Exists(directoryPath))
+                //{
+                //    Console.WriteLine($"Directory not found: {directoryPath}");
+                 //   MessageBox.Show("Directory not found");
 
-                    return;
-                }
-                string ascii1 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(pathori));
+                //    return;
+                //}
+                string ascii1 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(pathori));
+                string ascii1c = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(pathori));
                 // Get all image files from the directory
-                string[] imageFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
-                                               .Where(file => file.ToLower().EndsWith("jpg") ||
-                                                              file.ToLower().EndsWith("jpeg") ||
-                                                              file.ToLower().EndsWith("png") ||
-                                                              file.ToLower().EndsWith("bmp") ||
-                                                              file.ToLower().EndsWith("gif")).ToArray();
+                //string[] imageFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
+                                               //.Where(file => file.ToLower().EndsWith("jpg") ||
+                                                              //file.ToLower().EndsWith("jpeg") ||
+                                                              //file.ToLower().EndsWith("png") ||
+                                                              //file.ToLower().EndsWith("bmp") ||
+                                                             // file.ToLower().EndsWith("gif")).ToArray();
                 bool kmp = false;
                 if (Controls.Find("checkBox1", true)[0] is CheckBox check)
                 {
@@ -157,21 +161,26 @@ namespace Tubes3_YUBIsa
                         kmp = true;
                     }
                 }
-                foreach (string imagePath in imageFiles)
+                foreach (var entry in fingers)
                 {
                     try
                     {
+                        string nama = entry.Nama;
                         Debug.WriteLine(1);
                         // Process each image
-                        string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(imagePath));
+                        string ascii2 = entry.BerkasCitra;
+                        if (ascii2 == null)
+                        {
+                            continue;
+                        }
                         int index;
                         if (kmp)
                         {
-                            index = KMPAlgorithm.KMPSearch(ascii2, ascii1);
+                            index = KMPAlgorithm.KMPSearch(ascii2, ascii1c);
                         }
                         else
                         {
-                            index = BoyerMooreAlgorithm.BoyerMooreSearch(ascii2, ascii1);
+                            index = BoyerMooreAlgorithm.BoyerMooreSearch(ascii2, ascii1c);
                         }
                         Debug.WriteLine(index);
                         if (index != -1)
@@ -193,15 +202,20 @@ namespace Tubes3_YUBIsa
                             }
                             if (Controls.Find("pictureBox2", true)[0] is PictureBox picture2)
                             {
-                                picture2.Invoke(new Action(() => picture2.Image = Image.FromFile(imagePath)));
+                                picture2.Invoke(new Action(() => picture2.Image = FingerprintProcessor.BinaryToBitmap(BinaryToAsciiConverter.AsciiToBinary(ascii2, 103, 96))));
                                 //pictures.Image = Image.FromFile(bestMatchImagePath);
                                 if (Controls.Find("label3", true)[0] is Label labela)
                                 {
-                                    labela.Invoke(new Action(() => labela.Text = imagePath));
+                                    labela.Invoke(new Action(() => labela.Text = ascii2));
                                     //labela.Text = bestMatchImagePath;
                                 }
                                 //pictures.BringToFront();
                                 picture2.Invoke(new Action(() => picture2.BringToFront()));
+                            }
+                            if (Controls.Find("label4", true)[0] is Label laa4)
+                            {
+                                laa4.Invoke(new Action(() => laa4.Text = db.GetBiodata(nama)));
+                                Debug.WriteLine(db.GetBiodata(nama));
                             }
                             return;
                         }
@@ -210,19 +224,23 @@ namespace Tubes3_YUBIsa
                     catch (Exception ex)
                     {
      
-                        Console.WriteLine($"Error processing image {Path.GetFileName(imagePath)}: {ex.Message}");
+                        Console.WriteLine($"Error processing image  {ex.Message}");
                     }
                 }
-                string? bestMatchImagePath = null;
+                string? bestMatchname = null;
                 double similarity = double.MinValue;
-                foreach (string imagePath in imageFiles)
+                string? best = null;
+                foreach (var entry in fingers)
                 {
-                    string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(imagePath));
+                    string name = entry.Nama;
+                    string ascii2 = entry.BerkasCitra;
+                    //string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(imagePath));
                     double sim = LCSC.CalculateSimilarity(ascii1, ascii2);
                     if (sim > similarity)
                     {
                         similarity = sim;
-                        bestMatchImagePath = imagePath;
+                        bestMatchname = name;
+                        best = ascii2;
                     }
                 }
                 stopwatch.Stop();
@@ -239,15 +257,20 @@ namespace Tubes3_YUBIsa
                 }
                 if (Controls.Find("pictureBox2", true)[0] is PictureBox pictures)
                 {
-                    pictures.Invoke(new Action(()=>pictures.Image = Image.FromFile(bestMatchImagePath)));
+                    pictures.Invoke(new Action(() => pictures.Image = FingerprintProcessor.BinaryToBitmap(BinaryToAsciiConverter.AsciiToBinary(best, 103, 96))));
                     //pictures.Image = Image.FromFile(bestMatchImagePath);
                     if (Controls.Find("label3", true)[0] is Label labela)
                     {
-                        labela.Invoke(new Action(() => labela.Text = bestMatchImagePath));
+                        labela.Invoke(new Action(() => labela.Text = bestMatchname));
                         //labela.Text = bestMatchImagePath;
                     }
                     //pictures.BringToFront();
                     pictures.Invoke(new Action(()=> pictures.BringToFront()));
+                }
+                if (Controls.Find("label4", true)[0] is Label la4)
+                {
+                    la4.Invoke(new Action(() => la4.Text = db.GetBiodata(bestMatchname)));
+                    Debug.WriteLine(db.GetBiodata(bestMatchname));
                 }
 
             }
