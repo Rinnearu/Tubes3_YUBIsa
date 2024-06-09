@@ -129,8 +129,9 @@ namespace Tubes3_YUBIsa
             if (Controls.Find("label2", true)[0] is Label label)
             {
                 string pathori = label.Text;
-                string relativePath = @"SOCOFing\Real"; // Assuming there is an 'images' directory in the same directory as the executable
-                string directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\..\..", relativePath);
+                string relativePath = @"SOCOFing\Real";
+                string directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../", relativePath);
+                Debug.Write(directoryPath);
 
                 // Check if the directory exists
                 if (!Directory.Exists(directoryPath))
@@ -140,7 +141,7 @@ namespace Tubes3_YUBIsa
 
                     return;
                 }
-                string ascii1 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(pathori));
+                string ascii1 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(pathori));
                 // Get all image files from the directory
                 string[] imageFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
                                                .Where(file => file.ToLower().EndsWith("jpg") ||
@@ -172,6 +173,7 @@ namespace Tubes3_YUBIsa
                         {
                             index = BoyerMooreAlgorithm.BoyerMooreSearch(ascii2, ascii1);
                         }
+                        Debug.WriteLine(index);
                         if (index != -1)
                         {
                             stopwatch.Stop();
@@ -188,6 +190,18 @@ namespace Tubes3_YUBIsa
                                 {
                                     persentaselabeltemp.Text = ": 100%";
                                 });
+                            }
+                            if (Controls.Find("pictureBox2", true)[0] is PictureBox picture2)
+                            {
+                                picture2.Invoke(new Action(() => picture2.Image = Image.FromFile(imagePath)));
+                                //pictures.Image = Image.FromFile(bestMatchImagePath);
+                                if (Controls.Find("label3", true)[0] is Label labela)
+                                {
+                                    labela.Invoke(new Action(() => labela.Text = imagePath));
+                                    //labela.Text = bestMatchImagePath;
+                                }
+                                //pictures.BringToFront();
+                                picture2.Invoke(new Action(() => picture2.BringToFront()));
                             }
                             return;
                         }
@@ -214,21 +228,26 @@ namespace Tubes3_YUBIsa
                 stopwatch.Stop();
                 if (Controls.Find("waktulabel", true)[0] is Label waktulabel)
                 {
-                    waktulabel.Text = ": " + stopwatch.Elapsed.ToString();
+                    waktulabel.Invoke(new Action(() => waktulabel.Text = ": " + stopwatch.Elapsed.ToString()));
+                    //waktulabel.Text = ": " + stopwatch.Elapsed.ToString();
                 }
                 similarity *= 100;
                 if (Controls.Find("persentaselabel", true)[0] is Label persentaselabel)
                 {
-                    persentaselabel.Text = ": " + $"{similarity:F2}%";
+                    persentaselabel.Invoke(new Action(() => persentaselabel.Text = ": " + $"{similarity:F2}%"));
+                    //persentaselabel.Text = ": " + $"{similarity:F2}%";
                 }
                 if (Controls.Find("pictureBox2", true)[0] is PictureBox pictures)
                 {
-                    pictures.Image = Image.FromFile(bestMatchImagePath);
+                    pictures.Invoke(new Action(()=>pictures.Image = Image.FromFile(bestMatchImagePath)));
+                    //pictures.Image = Image.FromFile(bestMatchImagePath);
                     if (Controls.Find("label3", true)[0] is Label labela)
                     {
-                        labela.Text = bestMatchImagePath;
+                        labela.Invoke(new Action(() => labela.Text = bestMatchImagePath));
+                        //labela.Text = bestMatchImagePath;
                     }
-                    pictures.BringToFront();
+                    //pictures.BringToFront();
+                    pictures.Invoke(new Action(()=> pictures.BringToFront()));
                 }
 
             }
