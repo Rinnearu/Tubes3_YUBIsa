@@ -162,7 +162,7 @@ namespace Tubes3_YUBIsa
                     {
                         Debug.WriteLine(1);
                         // Process each image
-                        string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(imagePath));
+                        string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(imagePath));
                         int index;
                         if (kmp)
                         {
@@ -203,7 +203,7 @@ namespace Tubes3_YUBIsa
                 double similarity = double.MinValue;
                 foreach (string imagePath in imageFiles)
                 {
-                    string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(imagePath));
+                    string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(imagePath));
                     double sim = LCSC.CalculateSimilarity(ascii1, ascii2);
                     if (sim > similarity)
                     {

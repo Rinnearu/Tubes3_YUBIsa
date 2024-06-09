@@ -121,15 +121,17 @@ namespace Tubes3_YUBIsa
                 byte[,] binaryImage = new byte[height, width];
                 int yasli = 0;
                 int xax = 0;
-                for (int y = image.Height/2 -15; y < image.Height/2 + 15; y++)
+                for (int y = image.Height / 2 - 15; y < image.Height / 2 + 15; y++)
                 {
-                    for (int x = image.Width/2 - 15; x < image.Width/2 + 15; x++)
+                    for (int x = image.Width / 2 - 15; x < image.Width / 2 + 15; x++)
                     {
                         Color pixelColor = image.GetPixel(x, y);
                         int grayValue = (pixelColor.R + pixelColor.G + pixelColor.B) / 3;
                         binaryImage[yasli, xax] = (byte)(grayValue > 128 ? 1 : 0);
-                        yasli++;xax++;
+                        xax++;
                     }
+                    xax = 0;
+                    yasli++;
                 }
 
                 return binaryImage;
