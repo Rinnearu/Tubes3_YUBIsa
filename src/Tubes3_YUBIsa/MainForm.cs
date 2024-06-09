@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Configuration;
+using System.Windows.Forms;
 
 namespace Tubes3_YUBIsa
 {
@@ -190,25 +191,23 @@ namespace Tubes3_YUBIsa
                             }
                             return;
                         }
-                        // Do something with the binary image, e.g., save it, display it, etc.
-                        // For demonstration, we'll just print the dimensions of the binary image
 
                     }
                     catch (Exception ex)
                     {
-                        // Handle any exceptions that occur during image processing
+     
                         Console.WriteLine($"Error processing image {Path.GetFileName(imagePath)}: {ex.Message}");
                     }
                 }
                 string? bestMatchImagePath = null;
-                int minDistance = int.MaxValue;
+                double similarity = double.MinValue;
                 foreach (string imagePath in imageFiles)
                 {
                     string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(imagePath));
-                    int distance = HammingDistanceCalculator.ComputeHammingDistance(ascii1, ascii2);
-                    if (distance < minDistance)
+                    double sim = LCSC.CalculateSimilarity(ascii1, ascii2);
+                    if (sim > similarity)
                     {
-                        minDistance = distance;
+                        similarity = sim;
                         bestMatchImagePath = imagePath;
                     }
                 }
@@ -217,11 +216,19 @@ namespace Tubes3_YUBIsa
                 {
                     waktulabel.Text = ": " + stopwatch.Elapsed.ToString();
                 }
-                float result1 = (float)1 - (minDistance / ascii1.Length);
-
+                similarity *= 100;
                 if (Controls.Find("persentaselabel", true)[0] is Label persentaselabel)
                 {
-                    persentaselabel.Text = ": " + $"{result1:F2}%";
+                    persentaselabel.Text = ": " + $"{similarity:F2}%";
+                }
+                if (Controls.Find("pictureBox2", true)[0] is PictureBox pictures)
+                {
+                    pictures.Image = Image.FromFile(bestMatchImagePath);
+                    if (Controls.Find("label3", true)[0] is Label labela)
+                    {
+                        labela.Text = bestMatchImagePath;
+                    }
+                    pictures.BringToFront();
                 }
 
             }
