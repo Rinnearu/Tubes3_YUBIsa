@@ -211,6 +211,7 @@ namespace Tubes3_YUBIsa
 
         private void UpdateUI(string ascii2, TimeSpan elapsed, double similarity, string bestMatchname, string bioResult)
         {
+            similarity = 23;
             if (Controls.Find("waktulabel", true)[0] is Label waktulabel)
             {
                 waktulabel.Invoke(new Action(() => waktulabel.Text = ": " + elapsed.ToString()));
@@ -218,22 +219,47 @@ namespace Tubes3_YUBIsa
 
             if (Controls.Find("persentaselabel", true)[0] is Label persentaselabel)
             {
-                persentaselabel.Invoke(new Action(() => persentaselabel.Text = ": " + $"{similarity:F2}%"));
+                if (similarity < 65)
+                {
+                    persentaselabel.Invoke(new Action(() => persentaselabel.Text = ": " + "xx%"));
+                }
+                else
+                {
+                    persentaselabel.Invoke(new Action(() => persentaselabel.Text = ": " + $"{similarity:F2}%"));
+                }
+                
             }
 
             if (Controls.Find("pictureBox2", true)[0] is PictureBox pictures)
             {
-                pictures.Invoke(new Action(() => pictures.Image = FingerprintProcessor.BinaryToBitmap(BinaryToAsciiConverter.AsciiToBinary(ascii2, 103, 96))));
                 if (Controls.Find("label3", true)[0] is Label labela)
                 {
-                    labela.Invoke(new Action(() => labela.Text = bestMatchname));
+                    labela.Invoke(new Action(() => labela.Text = "Tidak ada sidik jari cocok"));
+                    if (Controls.Find("PanelKeluaran", true)[0] is Panel panelk)
+                    {
+                        panelk.Invoke(new Action(()=> panelk.BringToFront()));
+                    }
+                    labela.Invoke(new Action(() => labela.BringToFront()));
                 }
-                pictures.Invoke(new Action(() => pictures.BringToFront()));
+                if (similarity >= 65)
+                {
+                    pictures.Invoke(new Action(() => pictures.Image = FingerprintProcessor.BinaryToBitmap(BinaryToAsciiConverter.AsciiToBinary(ascii2, 103, 96))));
+                    pictures.Invoke(new Action(() => pictures.BringToFront()));
+                }
+                
             }
 
             if (Controls.Find("label8", true)[0] is Label la8)
             {
-                la8.Invoke(new Action(() => la8.Text = bioResult));
+                if (similarity < 65)
+                {
+                    la8.Invoke(new Action(() => la8.Text = "Sidik jari tidak ditemukan"));
+                }
+                else
+                {
+                    la8.Invoke(new Action(() => la8.Text = bioResult));
+                }
+                
             }
         }
 
