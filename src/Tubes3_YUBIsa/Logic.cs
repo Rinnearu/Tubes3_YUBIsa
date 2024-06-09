@@ -141,7 +141,7 @@ namespace Tubes3_YUBIsa
         {
             int height = binaryImage.GetLength(0);
             int width = binaryImage.GetLength(1);
-            Bitmap bitmap = new Bitmap(width, height);
+            Bitmap bitmap = new(width, height);
 
             for (int y = 0; y < height; y++)
             {
@@ -430,32 +430,4 @@ namespace Tubes3_YUBIsa
             return (2.0 * lcsLength) / (str1.Length + str2.Length);
         }
     }
-
-    class Test
-    {
-        static void test(string[] args) //Ubah ke MAIN KALO MAU TEST PAKE CLI
-        {
-            string imagePath = "C:\\Users\\User\\OneDrive - Institut Teknologi Bandung\\Pictures\\bh3rd\\2022-09-30-13-27-57_0.png"; // Change this path to your image file
-            byte[,] binaryImage = FingerprintProcessor.ConvertImageToBinary(imagePath);
-            string asciiString = BinaryToAsciiConverter.ConvertToAscii(binaryImage);
-
-            // Example fingerprint pattern to search
-            string image2 = "C:\\Users\\User\\OneDrive - Institut Teknologi Bandung\\Pictures\\bh3rd\\2022-09-30-13-28-05_0.png";
-            byte[,] binaryImag2e = FingerprintProcessor.ConvertImageToBinary(image2);
-            string ascii2 = BinaryToAsciiConverter.ConvertToAscii(binaryImag2e);
-
-            // KMP Search
-            int kmpResult = KMPAlgorithm.KMPSearch(asciiString, ascii2);
-            Console.WriteLine("KMP Search Result: " + kmpResult);
-
-            // Boyer-Moore Search
-            int bmResult = BoyerMooreAlgorithm.BoyerMooreSearch(asciiString, ascii2);
-            Console.WriteLine("Boyer-Moore Search Resul t: " + bmResult);
-
-            // Example strings for Hamming Distance
-            double hammingDistance = LCSC.CalculateSimilarity(asciiString, ascii2);
-            Console.WriteLine("similarity: " + hammingDistance*100);
-        }
-    }
-
 }

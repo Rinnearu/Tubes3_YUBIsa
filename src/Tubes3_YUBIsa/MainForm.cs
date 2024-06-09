@@ -20,7 +20,8 @@ namespace Tubes3_YUBIsa
             {
                 DatabaseConnector dbConnector = new DatabaseConnector(connectionString);
                 dbConnector.InitializeDatabase();
-            } else
+            }
+            else
             {
                 MessageBox.Show("Didn't found connection string");
             }
@@ -48,24 +49,16 @@ namespace Tubes3_YUBIsa
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Create a new instance of the OpenFileDialog
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                // Set the initial directory (optional)
-
-
-                // Set the filter for file types (optional)
                 Filter = "Image files (*.jpg;*.jpeg;*.png;*.bmp;*.gif)|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files (*.*)|*.*",
                 FilterIndex = 1,
 
-                // Set the title of the dialog (optional)
                 Title = "Open a file"
             };
 
-            // Show the dialog and check if the user clicked OK
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                // Get the selected file path
                 string selectedFilePath = openFileDialog.FileName;
 
                 if (Controls.Find("pictureBox1", true)[0] is PictureBox pictureBox)
@@ -75,7 +68,7 @@ namespace Tubes3_YUBIsa
                     {
                         label.Text = selectedFilePath;
                     }
-                    pictureBox.BringToFront(); // Bring the PictureBox to the front
+                    pictureBox.BringToFront();
                     searchButton.Enabled = true;
                 }
                 else
@@ -90,21 +83,19 @@ namespace Tubes3_YUBIsa
             if (checkBox1.Checked)
             {
                 checkBox1.Text = "KMP";
-                // Perform actions for the "On" state
             }
             else
             {
                 checkBox1.Text = "BM";
-                // Perform actions for the "Off" state
             }
         }
 
         private async void searchbutton_Click(object sender, EventArgs e)
         {
             ShowLoadingPanel();
-            
+
             await Task.Run(() => SearchMatching());
-           
+
             CloseLoadingPanel();
         }
 
@@ -124,35 +115,19 @@ namespace Tubes3_YUBIsa
 
         private void SearchMatching()
         {
-            DatabaseConnector db = new DatabaseConnector(ConfigurationManager.ConnectionStrings["Default"].ConnectionString);
-            List<FingerprintEntry>fingers = db.GetAllFingerprints();
+            DatabaseConnector db = new(ConfigurationManager.ConnectionStrings["Default"].ConnectionString);
+            List<FingerprintEntry> fingers = db.GetAllFingerprints();
+
             Stopwatch stopwatch = new();
             stopwatch.Start();
 
             if (Controls.Find("label2", true)[0] is Label label)
             {
                 string pathori = label.Text;
-                //string relativePath = @"SOCOFing\Real";
-                //string directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../", relativePath);
-                //Debug.Write(directoryPath);
 
-                // Check if the directory exists
-                //if (!Directory.Exists(directoryPath))
-                //{
-                //    Console.WriteLine($"Directory not found: {directoryPath}");
-                 //   MessageBox.Show("Directory not found");
-
-                //    return;
-                //}
                 string ascii1 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(pathori));
                 string ascii1c = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(pathori));
-                // Get all image files from the directory
-                //string[] imageFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
-                                               //.Where(file => file.ToLower().EndsWith("jpg") ||
-                                                              //file.ToLower().EndsWith("jpeg") ||
-                                                              //file.ToLower().EndsWith("png") ||
-                                                              //file.ToLower().EndsWith("bmp") ||
-                                                             // file.ToLower().EndsWith("gif")).ToArray();
+
                 bool kmp = false;
                 if (Controls.Find("checkBox1", true)[0] is CheckBox check)
                 {
@@ -161,122 +136,104 @@ namespace Tubes3_YUBIsa
                         kmp = true;
                     }
                 }
-                foreach (var entry in fingers)
+
+                var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                bool found = false;
+
+                Parallel.ForEach(fingers, parallelOptions, (entry, loopState) =>
                 {
+                    if (found)
+                    {
+                        return;
+                    }
+
                     try
                     {
-                        string nama = entry.Nama;
-                        Debug.WriteLine(1);
-                        // Process each image
-                        string ascii2 = entry.BerkasCitra;
+                        string? ascii2 = entry.BerkasCitra;
+
                         if (ascii2 == null)
                         {
-                            continue;
-                        }
-                        int index;
-                        if (kmp)
-                        {
-                            index = KMPAlgorithm.KMPSearch(ascii2, ascii1c);
-                        }
-                        else
-                        {
-                            index = BoyerMooreAlgorithm.BoyerMooreSearch(ascii2, ascii1c);
-                        }
-                        Debug.WriteLine(index);
-                        if (index != -1)
-                        {
-                            stopwatch.Stop();
-                            if (Controls.Find("waktulabel", true)[0] is Label waktulabeltemp)
-                            {
-                                waktulabeltemp.Invoke((MethodInvoker)delegate
-                                {
-                                    waktulabeltemp.Text = ": " + stopwatch.Elapsed.ToString();
-                                });
-                            }
-                            if (Controls.Find("persentaselabel", true)[0] is Label persentaselabeltemp)
-                            {
-                                persentaselabeltemp.Invoke((MethodInvoker)delegate
-                                {
-                                    persentaselabeltemp.Text = ": 100%";
-                                });
-                            }
-                            if (Controls.Find("pictureBox2", true)[0] is PictureBox picture2)
-                            {
-                                picture2.Invoke(new Action(() => picture2.Image = FingerprintProcessor.BinaryToBitmap(BinaryToAsciiConverter.AsciiToBinary(ascii2, 103, 96))));
-                                //pictures.Image = Image.FromFile(bestMatchImagePath);
-                                if (Controls.Find("label3", true)[0] is Label labela)
-                                {
-                                    labela.Invoke(new Action(() => labela.Text = ascii2));
-                                    //labela.Text = bestMatchImagePath;
-                                }
-                                //pictures.BringToFront();
-                                picture2.Invoke(new Action(() => picture2.BringToFront()));
-                            }
-                            if (Controls.Find("label4", true)[0] is Label laa4)
-                            {
-                                laa4.Invoke(new Action(() => laa4.Text = db.GetBiodata(nama)));
-                                Debug.WriteLine(db.GetBiodata(nama));
-                            }
                             return;
                         }
 
+                        int index = kmp ? KMPAlgorithm.KMPSearch(ascii2, ascii1c) : BoyerMooreAlgorithm.BoyerMooreSearch(ascii2, ascii1c);
+
+                        if (index != -1)
+                        {
+                            stopwatch.Stop();
+                            UpdateUI(ascii2, stopwatch.Elapsed, 100.0, entry.Nama, db.GetBiodata(entry.Nama));
+                            found = true;
+                            loopState.Stop();
+                        }
                     }
                     catch (Exception ex)
                     {
-     
                         Console.WriteLine($"Error processing image  {ex.Message}");
                     }
-                }
-                string? bestMatchname = null;
-                double similarity = double.MinValue;
-                string? best = null;
-                foreach (var entry in fingers)
-                {
-                    string name = entry.Nama;
-                    string ascii2 = entry.BerkasCitra;
-                    //string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinaryCenter(imagePath));
-                    double sim = LCSC.CalculateSimilarity(ascii1, ascii2);
-                    if (sim > similarity)
-                    {
-                        similarity = sim;
-                        bestMatchname = name;
-                        best = ascii2;
-                    }
-                }
-                stopwatch.Stop();
-                if (Controls.Find("waktulabel", true)[0] is Label waktulabel)
-                {
-                    waktulabel.Invoke(new Action(() => waktulabel.Text = ": " + stopwatch.Elapsed.ToString()));
-                    //waktulabel.Text = ": " + stopwatch.Elapsed.ToString();
-                }
-                similarity *= 100;
-                if (Controls.Find("persentaselabel", true)[0] is Label persentaselabel)
-                {
-                    persentaselabel.Invoke(new Action(() => persentaselabel.Text = ": " + $"{similarity:F2}%"));
-                    //persentaselabel.Text = ": " + $"{similarity:F2}%";
-                }
-                if (Controls.Find("pictureBox2", true)[0] is PictureBox pictures)
-                {
-                    pictures.Invoke(new Action(() => pictures.Image = FingerprintProcessor.BinaryToBitmap(BinaryToAsciiConverter.AsciiToBinary(best, 103, 96))));
-                    //pictures.Image = Image.FromFile(bestMatchImagePath);
-                    if (Controls.Find("label3", true)[0] is Label labela)
-                    {
-                        labela.Invoke(new Action(() => labela.Text = bestMatchname));
-                        //labela.Text = bestMatchImagePath;
-                    }
-                    //pictures.BringToFront();
-                    pictures.Invoke(new Action(()=> pictures.BringToFront()));
-                }
-                if (Controls.Find("label4", true)[0] is Label la4)
-                {
-                    la4.Invoke(new Action(() => la4.Text = db.GetBiodata(bestMatchname)));
-                    Debug.WriteLine(db.GetBiodata(bestMatchname));
-                }
+                });
 
+                if (!found)
+                {
+                    string? bestMatchname = null;
+                    double similarity = double.MinValue;
+                    string? best = null;
+
+                    Parallel.ForEach(fingers, parallelOptions, entry =>
+                    {
+                        string? name = entry.Nama;
+                        string? ascii2 = entry.BerkasCitra;
+
+                        double sim = LCSC.CalculateSimilarity(ascii1, ascii2);
+                        lock (this)
+                        {
+                            if (sim > similarity)
+                            {
+                                similarity = sim;
+                                bestMatchname = name;
+                                best = ascii2;
+                            }
+                        }
+                    });
+
+                    stopwatch.Stop();
+
+                    UpdateUI(best, stopwatch.Elapsed, similarity * 100, bestMatchname, db.GetBiodata(bestMatchname));
+                } else
+                {
+                    stopwatch.Stop();
+                }
             }
             else
             {
                 Debug.Write("Error");
+            }
+        }
+
+        private void UpdateUI(string ascii2, TimeSpan elapsed, double similarity, string bestMatchname, string bioResult)
+        {
+            if (Controls.Find("waktulabel", true)[0] is Label waktulabel)
+            {
+                waktulabel.Invoke(new Action(() => waktulabel.Text = ": " + elapsed.ToString()));
+            }
+
+            if (Controls.Find("persentaselabel", true)[0] is Label persentaselabel)
+            {
+                persentaselabel.Invoke(new Action(() => persentaselabel.Text = ": " + $"{similarity:F2}%"));
+            }
+
+            if (Controls.Find("pictureBox2", true)[0] is PictureBox pictures)
+            {
+                pictures.Invoke(new Action(() => pictures.Image = FingerprintProcessor.BinaryToBitmap(BinaryToAsciiConverter.AsciiToBinary(ascii2, 103, 96))));
+                if (Controls.Find("label3", true)[0] is Label labela)
+                {
+                    labela.Invoke(new Action(() => labela.Text = bestMatchname));
+                }
+                pictures.Invoke(new Action(() => pictures.BringToFront()));
+            }
+
+            if (Controls.Find("label8", true)[0] is Label la8)
+            {
+                la8.Invoke(new Action(() => la8.Text = bioResult));
             }
         }
 
@@ -316,6 +273,16 @@ namespace Tubes3_YUBIsa
         }
 
         private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void LoadingPanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
         {
 
         }

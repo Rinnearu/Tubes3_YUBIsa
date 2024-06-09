@@ -170,30 +170,33 @@ namespace Tubes3_YUBIsa
             using (var connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "SELECT * FROM biodata WHERE nama = @nama";
+
+                string pattern = RegexPatternCreator.GetPattern(nama);
+                string query = "SELECT * FROM biodata WHERE nama REGEXP @pattern";
                 using (var command = new MySqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@nama", nama);
+                    command.Parameters.AddWithValue("@pattern", pattern);
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            return $"NIK: {reader["NIK"]}\n" +
-                                   $"Nama: {reader["nama"]}\n" +
-                                   $"Tempat Lahir: {reader["tempat_lahir"]}\n" +
-                                   $"Tanggal Lahir: {reader.GetDateTime("tanggal_lahir"):yyyy-MM-dd}\n" +
-                                   $"Jenis Kelamin: {reader["jenis_kelamin"]}\n" +
-                                   $"Golongan Darah: {reader["golongan_darah"]}\n" +
-                                   $"Alamat: {reader["alamat"]}\n" +
-                                   $"Agama: {reader["agama"]}\n" +
-                                   $"Status Perkawinan: {reader["status_perkawinan"]}\n" +
-                                   $"Pekerjaan: {reader["pekerjaan"]}\n" +
-                                   $"Kewarganegaraan: {reader["kewarganegaraan"]}";
+                            return $"Nama Alay : {reader.GetString("nama")}\n" + 
+                                   $"NIK : {reader.GetString("NIK")}\n" +
+                                   $"Nama : {nama}\n" +
+                                   $"Tempat Lahir : {reader.GetString("tempat_lahir")}\n" +
+                                   $"Tanggal Lahir : {reader.GetDateTime("tanggal_lahir"):dd-MM-yyyy}\n" +
+                                   $"Jenis Kelamin : {reader.GetString("jenis_kelamin")}\n" +
+                                   $"Golongan Darah : {reader.GetString("golongan_darah")}\n" +
+                                   $"Alamat : {reader.GetString("alamat")}\n" +
+                                   $"Agama : {reader.GetString("agama")}\n" +
+                                   $"Status Perkawinan : {reader.GetString("status_perkawinan")}\n" +
+                                   $"Pekerjaan : {reader.GetString("pekerjaan")}\n" +
+                                   $"Kewarganegaraan : {reader.GetString("kewarganegaraan")}";
                         }
                     }
                 }
             }
-            return null;
+            return "Currently No Result";
         }
     }
 
