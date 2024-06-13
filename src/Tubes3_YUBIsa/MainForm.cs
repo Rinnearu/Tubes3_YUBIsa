@@ -149,7 +149,8 @@ namespace Tubes3_YUBIsa
 
                     try
                     {
-                        string? ascii2 = entry.BerkasCitra;
+                        string directoryPath = @"C:\Users\USER\Kuliah\SEMESTER4\Sttrategi Algoritma\Tubes\Tubes3 - YUBIsa\Tubes3_YUBIsa\Dataset\";
+                        string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(directoryPath + entry.BerkasCitra));
 
                         if (ascii2 == null)
                         {
@@ -164,7 +165,7 @@ namespace Tubes3_YUBIsa
                             UpdateUI(ascii2, stopwatch.Elapsed, 100.0, entry.Nama, db.GetBiodata(entry.Nama));
                             found = true;
                             loopState.Stop();
-                        }
+                        } 
                     }
                     catch (Exception ex)
                     {
@@ -181,7 +182,8 @@ namespace Tubes3_YUBIsa
                     Parallel.ForEach(fingers, parallelOptions, entry =>
                     {
                         string? name = entry.Nama;
-                        string? ascii2 = entry.BerkasCitra;
+                        string directoryPath = @"C:\Users\USER\Kuliah\SEMESTER4\Sttrategi Algoritma\Tubes\Tubes3 - YUBIsa\Tubes3_YUBIsa\Dataset\";
+                        string ascii2 = BinaryToAsciiConverter.ConvertToAscii(FingerprintProcessor.ConvertImageToBinary(directoryPath + entry.BerkasCitra));
 
                         double sim = LCSC.CalculateSimilarity(ascii1, ascii2);
                         lock (this)
@@ -211,7 +213,6 @@ namespace Tubes3_YUBIsa
 
         private void UpdateUI(string ascii2, TimeSpan elapsed, double similarity, string bestMatchname, string bioResult)
         {
-            similarity = 23;
             if (Controls.Find("waktulabel", true)[0] is Label waktulabel)
             {
                 waktulabel.Invoke(new Action(() => waktulabel.Text = ": " + elapsed.ToString()));

@@ -41,6 +41,7 @@ namespace Tubes3_YUBIsa
                 case 'i': return "[Ii1]?";
                 case 'o': return "[Oo0]?";
                 case 'u': return "[Uu]?";
+                case 'z': return "[Zz2]?";
                 case 'g': return "[Gg69]";
                 case 's': return "[Ss5]";
                 default: return char.IsLetter(ch) ? $"[{char.ToUpper(ch)}{char.ToLower(ch)}]" : Regex.Escape(ch.ToString());

@@ -65,7 +65,7 @@ namespace Tubes3_YUBIsa
 
         private void InsertInitialFingerprint(MySqlConnection connection)
         {
-            string directoryPath = @"C:\Users\USER\Kuliah\SEMESTER4\Sttrategi Algoritma\Tubes\Tubes3 - YUBIsa\SOCOFing\Real";
+            string directoryPath = @"C:\Users\USER\Kuliah\SEMESTER4\Sttrategi Algoritma\Tubes\Tubes3 - YUBIsa\Tubes3_YUBIsa\Dataset";
             string[] files = Directory.GetFiles(directoryPath, "*.bmp");
             names = GetAllNamesFromBiodata(connection);
             string query = "INSERT INTO sidik_jari (berkas_citra, nama) VALUES (@Content, @Name)";
